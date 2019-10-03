@@ -8,6 +8,17 @@ class Project extends Model
 {
     protected $fillable = [
         'title',
-        'description'
+        'description',
+        'ownerId'
     ];
+
+    public function path()
+    {
+        return "/projects/{$this->id}";
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'ownerId');
+    }
 }
