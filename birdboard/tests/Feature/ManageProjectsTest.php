@@ -29,7 +29,7 @@ class ManageProjectsTest extends TestCase
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
         ];
-        $this->post('/projects', $attributes)->assertRedirect('/projects');
+        $this->post('/projects', $attributes);
         $this->assertDatabaseHas('projects', $attributes);
         $this->get('/projects')->assertSee($attributes['title']);
     }
