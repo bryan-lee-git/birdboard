@@ -1,5 +1,9 @@
 .button {
-    background-color: #47CCFE;
+    @apply .bg-blue;
+}
+
+.card {
+    @apply .bg-white .rounded-lg .shadow .p-5;
 }
 
 @tailwind base;
