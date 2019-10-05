@@ -3,9 +3,9 @@
     <header class="flex items-center mb-3 py-4">
         <div class="flex justify-between w-full items-end text-sm">
             <p class="text-gray-500">
-                <a href="/projects">My Projects</a> / {{ $project ->title }}
+                <a href="/projects">My Projects</a> / {{ $project->title }}
             </p>
-            <a class="button py-2 px-5 rounded text-white shadow" href="/projects/create">Add Project</a>
+            <a class="button" href="/projects/create">Add Project</a>
         </div>
     </header>
     <main>
@@ -34,10 +34,15 @@
                 </div>
                 <div class="mb-8">
                     <h2 class="text-gray-500 mb-3">General Notes</h2>
-                    <textarea class="card w-full" style="min-height:200px;">Lorem ipsum.</textarea>
+                    <form method="POST" action="{{ $project->path() }}">
+                        @csrf
+                        @method("PATCH")
+                        <textarea name="notes" class="card w-full mb-4" style="min-height:200px;" placeholder="Add some notes here...">{{ $project->notes }}</textarea>
+                        <button type="submit" class="button">Save</button>
+                    </form>
                 </div>
             </div>
-            <div class="lg:w-1/4 px-3">
+            <div class="lg:w-1/4 px-3 lg:py-8">
                 @include('projects.card')
             </div>
         </div>

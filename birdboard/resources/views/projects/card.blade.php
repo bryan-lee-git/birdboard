@@ -4,5 +4,5 @@
             {{ $project->title }}
         </a>
     </h3>
-    <div class="text-gray-500">{{ Str::limit($project->description, 100) }}</div>
+    <div class="text-gray-500">{{ Str::limit($project->description, 90) }}</div>
 </div>

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Project;
 
 class ManageProjectsTest extends TestCase
 {
@@ -21,17 +22,34 @@ class ManageProjectsTest extends TestCase
     }
 
     /** @test */
-    public function user_can_create_project()
+    public function a_user_can_create_project()
     {
         $this->signIn();
         $this->get('/projects/create')->assertStatus(200);
         $attributes = [
             'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->sentence,
+            'notes' => 'General notes here.'
         ];
-        $this->post('/projects', $attributes);
+        $response = $this->post('/projects', $attributes);
+        $project = Project::where($attributes)->first();
+        $response->assertRedirect($project->path());
         $this->assertDatabaseHas('projects', $attributes);
-        $this->get('/projects')->assertSee($attributes['title']);
+        $this->get($project->path())
+            ->assertSee($attributes['title'])
+            ->assertSee($attributes['description'])
+            ->assertSee($attributes['notes']);
+    }
+
+    /** @test */
+    public function a_user_can_update_project()
+    {
+        $this->signIn();
+        $project = factory('App\Project')->create(['ownerId' => auth()->id()]);
+        $this->patch($project->path(), [
+            'notes' => 'changed'
+        ])->assertRedirect($project->path());
+        $this->assertDatabaseHas('projects', ['notes' => 'changed']);
     }
 
     /** @test */
@@ -50,6 +68,14 @@ class ManageProjectsTest extends TestCase
         $this->signIn();
         $project = factory('App\Project')->create();
         $this->get($project->path())->assertStatus(403);
+    }
+
+    /** @test */
+    public function an_authenticated_user_cannot_update_the_projects_of_others()
+    {
+        $this->signIn();
+        $project = factory('App\Project')->create();
+        $this->patch($project->path(), [])->assertStatus(403);
     }
 
     /** @test */
