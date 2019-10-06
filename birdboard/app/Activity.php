@@ -12,4 +12,9 @@ class Activity extends Model
     {
         return $this->belongsTo(Project::class, 'projectId');
     }
+
+    public function subject()
+    {
+        return $this->morphTo();
+    }
 }

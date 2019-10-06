@@ -1,1 +1,1 @@
-Task created by you
+Task "{{ $activity->subject->body }}" created by you

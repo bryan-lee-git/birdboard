@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Facades\Tests\Setup\ProjectFactory;
+use App\Task;
 
 class TriggerActivityTest extends TestCase
 {
@@ -34,7 +35,11 @@ class TriggerActivityTest extends TestCase
         $project = ProjectFactory::ownedBy($this->signIn())->create();
         $project->addTask('Some task');
         $this->assertCount(2, $project->activity);
-        $this->assertEquals('task_created', $project->activity->last()->description);
+        tap($project->activity->last(), function ($activity) {
+            $this->assertEquals('task_created', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+            $this->assertEquals('Some task', $activity->subject->body);
+        });
     }
 
     /** @test */
@@ -43,19 +48,22 @@ class TriggerActivityTest extends TestCase
         $project = ProjectFactory::ownedBy($this->signIn())->withTasks(1)->create();
         $project->tasks->first()->delete();
         $this->assertCount(3, $project->activity);
-        $this->assertEquals('task_deleted', $project->activity->last()->description);
+        tap($project->activity->last(), function ($activity) {
+            $this->assertEquals('task_deleted', $activity->description);
+        });
     }
 
     /** @test */
     public function marking_a_task_complete()
     {
         $project = ProjectFactory::ownedBy($this->signIn())->withTasks(1)->create();
-        $this->patch($project->tasks->first()->path(), [
-            'body' => 'changed',
-            'completed' => true
-        ]);
+        $project->tasks->first()->complete();
         $this->assertCount(3, $project->activity);
-        $this->assertEquals('task_completed', $project->activity->last()->description);
+        tap($project->activity->last(), function ($activity) {
+            $this->assertEquals('task_completed', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+            $this->assertTrue($activity->subject->completed);
+        });
     }
 
     /** @test */
@@ -64,6 +72,10 @@ class TriggerActivityTest extends TestCase
         $project = ProjectFactory::ownedBy($this->signIn())->withTasks(1)->create(['completed' => true]);
         $project->tasks->first()->incomplete();
         $this->assertCount(3, $project->activity);
-        $this->assertEquals('task_incomplete', $project->activity->last()->description);
+        tap($project->activity->last(), function ($activity) {
+            $this->assertEquals('task_incomplete', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+            $this->assertFalse($activity->subject->completed);
+        });
     }
 }
