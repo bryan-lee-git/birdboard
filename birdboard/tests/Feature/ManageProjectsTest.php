@@ -68,6 +68,19 @@ class ManageProjectsTest extends TestCase
     }
 
     /** @test */
+    public function a_user_can_update_only_projects_notes()
+    {
+        $project = ProjectFactory::ownedBy($this->signIn())->create();
+        $this->patch($project->path(), [
+            'notes' => 'changed'
+        ])->assertRedirect($project->path());
+        $this->get($project->path() . '/edit')->assertOk();
+        $this->assertDatabaseHas('projects', [
+            'notes' => 'changed'
+        ]);
+    }
+
+    /** @test */
     public function user_can_view_their_project()
     {
         $project = ProjectFactory::ownedBy($this->signIn())
