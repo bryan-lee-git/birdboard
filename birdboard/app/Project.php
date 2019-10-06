@@ -8,6 +8,7 @@ use App\Activity;
 class Project extends Model
 {
     protected $guarded = [];
+    public $old = [];
 
     public function path()
     {
@@ -36,6 +37,19 @@ class Project extends Model
 
     public function recordActivity($description)
     {
-        return $this->activity()->create(compact('description'));
+        $this->activity()->create([
+            'description' => $description,
+            'changes' => $this->activityChanges($description)
+        ]);
+    }
+
+    protected function activityChanges($description)
+    {
+        if ($description === 'updated') {
+            return [
+                'before' => array_diff($this->old, $this->getAttributes()),
+                'after' => $this->getChanges()
+            ];
+        }
     }
 }

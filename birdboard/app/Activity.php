@@ -8,6 +8,10 @@ class Activity extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'changes' => 'array'
+    ];
+
     public function project()
     {
         return $this->belongsTo(Project::class, 'projectId');
