@@ -23,6 +23,11 @@ class Project extends Model
         return $this->hasMany(Task::class, 'projectId');
     }
 
+    public function activities()
+    {
+        return $this->hasMany(Activity::class, 'projectId');
+    }
+
     public function addTask($body)
     {
         return $this->tasks()->create(compact('body'));
