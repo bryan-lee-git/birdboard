@@ -69,10 +69,8 @@ class ProjectTasksTest extends TestCase
             ->withTasks(1)
             ->create();
 
-        $this->patch($project->tasks->first()->path(), [
-            'body' => 'changed',
-            'completed' => true
-        ]);
+        $this->patch($project->tasks->first()->path(), ['body' => 'changed']);
+        $project->tasks->first()->complete();
 
         $this->assertDatabaseHas('tasks', [
             'body' => 'changed',
