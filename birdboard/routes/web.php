@@ -25,6 +25,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/projects/{project}', 'ProjectsController@show');
     Route::patch('/projects/{project}', 'ProjectsController@update');
+    Route::get('/projects/{project}/edit', 'ProjectsController@edit');
 
     Route::get('/home', 'HomeController@index')->name('home');
 });
