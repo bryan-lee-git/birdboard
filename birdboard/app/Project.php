@@ -4,11 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Activity;
+use App\RecordsActivity;
 
 class Project extends Model
 {
+    use RecordsActivity;
+
     protected $guarded = [];
-    public $old = [];
+
+    protected static $recordableEvents = ['updated', 'created'];
 
     public function path()
     {
@@ -25,31 +29,8 @@ class Project extends Model
         return $this->hasMany(Task::class, 'projectId');
     }
 
-    public function activity()
-    {
-        return $this->hasMany(Activity::class, 'projectId')->latest();
-    }
-
     public function addTask($body)
     {
         return $this->tasks()->create(compact('body'));
-    }
-
-    public function recordActivity($description)
-    {
-        $this->activity()->create([
-            'description' => $description,
-            'changes' => $this->activityChanges($description)
-        ]);
-    }
-
-    protected function activityChanges($description)
-    {
-        if ($description === 'updated') {
-            return [
-                'before' => array_diff($this->old, $this->getAttributes()),
-                'after' => $this->getChanges()
-            ];
-        }
     }
 }
