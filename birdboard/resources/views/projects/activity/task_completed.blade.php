@@ -1,1 +1,1 @@
-Task "{{ $activity->subject->body }}" marked complete by you
+Task "{{ $activity->subject->body }}" marked complete by {{ $activity->user->name }}

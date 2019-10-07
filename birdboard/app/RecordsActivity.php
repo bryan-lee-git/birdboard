@@ -25,6 +25,7 @@ trait RecordsActivity
         return $this->activity()->create([
             'description' => $description,
             'changes' => $this->activityChanges($description),
+            'userId' => ($this->project ?? $this)->owner->id,
             'projectId' => class_basename($this) === 'Project' ? $this->id : $this->projectId
         ]);
     }
