@@ -5,7 +5,21 @@
             <p class="text-gray-500">
                 <a href="/projects">My Projects</a> / {{ $project->title }}
             </p>
-            <a class="button" href="{{ $project->path() . '/edit' }}">Edit Project</a>
+            <div class="flex items-center">
+                @foreach ($project->members as $member)
+                    <img
+                        class="rounded-full w-8 mr-2"
+                        src="{{ gravatarUrl($member->email) }}"
+                        alt="{{ $member->name }}'s avatar'"
+                    >
+                @endforeach
+                <img
+                    class="rounded-full w-8 mr-2"
+                    src="{{ gravatarUrl($project->owner->email) }}"
+                    alt="{{ $project->owner->name }}'s avatar'"
+                >
+                <a class="button ml-4" href="{{ $project->path() . '/edit' }}">Edit Project</a>
+            </div>
         </div>
     </header>
     <main>

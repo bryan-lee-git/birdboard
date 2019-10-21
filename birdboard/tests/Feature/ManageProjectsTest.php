@@ -144,4 +144,13 @@ class ManageProjectsTest extends TestCase
         $this->post('/projects', $attributes)
             ->assertSessionHasErrors('description');
     }
+
+    /** @test */
+    public function a_user_can_see_all_projects_they_have_ben_invited_to_on_dashboard()
+    {
+        $user = $this->signIn();
+        $project = ProjectFactory::create();
+        $project->invite($user);
+        $this->get('/projects')->assertSee($project->title);
+    }
 }
